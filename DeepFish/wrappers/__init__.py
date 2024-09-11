@@ -7,9 +7,9 @@ import numpy as np
 from . import clf_wrapper, reg_wrapper, loc_wrapper, seg_wrapper
 
 
-def get_wrapper(wrapper_name, model, opt=None):
+def get_wrapper(wrapper_name, model, opt=None, device="cuda"):
     if wrapper_name == "clf_wrapper":
-        return clf_wrapper.ClfWrapper(model, opt)
+        return clf_wrapper.ClfWrapper(model, opt, device)
 
     if wrapper_name == "reg_wrapper":
         return reg_wrapper.RegWrapper(model, opt)
@@ -22,7 +22,7 @@ def get_wrapper(wrapper_name, model, opt=None):
 
 # ===============================================
 # Trainers
-def train_on_loader(model, train_loader):
+def train_on_loader(model, train_loader: torch.utils.data.DataLoader):
     model.train()
 
     n_batches = len(train_loader)
@@ -31,9 +31,9 @@ def train_on_loader(model, train_loader):
     for e in range(1):
         for i, batch in enumerate(tqdm.tqdm(train_loader)):
             score_dict = model.train_on_batch(batch)
-            
+
             train_monitor.add(score_dict)
-        
+
     return train_monitor.get_avg_score()
 
 @torch.no_grad()
@@ -60,9 +60,9 @@ def vis_on_loader(model, vis_loader, savedir):
     split = vis_loader.dataset.split
     for i, batch in enumerate(vis_loader):
         print("%d - visualizing %s image - savedir:%s" % (i, batch["meta"]["split"][0], savedir.split("/")[-2]))
-        model.vis_on_batch(batch, 
+        model.vis_on_batch(batch,
         savedir_image=os.path.join(savedir, f'{i}.png'))
-        
+
 
 @torch.no_grad()
 def test_on_loader(model, test_loader):
@@ -104,4 +104,3 @@ class TrainMonitor:
     def get_avg_score(self):
         return {k:v/(self.n + 1) for k,v in self.score_dict_sum.items()}
 
-    

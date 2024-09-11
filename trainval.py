@@ -35,9 +35,14 @@ def trainval(exp_dict, savedir, args):
     np.random.seed(seed)
     torch.manual_seed(seed)
     if args.use_cuda:
-        device = 'cuda'
-        torch.cuda.manual_seed_all(seed)
-        assert torch.cuda.is_available(), 'cuda is not, available please run with "-uc 0"'
+        if torch.cuda.is_available():
+            device = 'cuda'
+            torch.cuda.manual_seed_all(seed)
+        elif torch.backends.mps.is_available():
+            device = 'mps'
+        else:
+            raise ValueError('cuda or mps is not available please run with "-uc 0"')
+
     else:
         device = 'cpu'
 
@@ -67,11 +72,11 @@ def trainval(exp_dict, savedir, args):
                             batch_size=1)
 
     # Create model, opt, wrapper
-    model_original = models.get_model(exp_dict["model"], exp_dict=exp_dict).cuda()
+    model_original = models.get_model(exp_dict["model"], exp_dict=exp_dict).to(device)
     opt = torch.optim.Adam(model_original.parameters(),
                         lr=1e-5, weight_decay=0.0005)
 
-    model = wrappers.get_wrapper(exp_dict["wrapper"], model=model_original, opt=opt).cuda()
+    model = wrappers.get_wrapper(exp_dict["wrapper"], model=model_original, opt=opt, device=device).to(device)
 
     score_list = []
 
