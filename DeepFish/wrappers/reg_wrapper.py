@@ -5,10 +5,10 @@ from torchvision import transforms
 import os
 import numpy as np
 import time
-from src import utils as ut
+from DeepFish import utils as ut
 from sklearn.metrics import confusion_matrix
 import skimage
-from src import wrappers
+from DeepFish import wrappers
 from haven import haven_utils as hu
 
 

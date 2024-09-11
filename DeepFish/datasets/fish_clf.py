@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
-from src import datasets
+from DeepFish import datasets
 import os
 from PIL import Image
 from torchvision import transforms
 
 class FishClf:
-    def __init__(self, split, transform=None, datadir="", 
+    def __init__(self, split, transform=None, datadir="",
                  n_samples=None, habitat=None):
 
         self.split = split
@@ -17,8 +17,8 @@ class FishClf:
         self.img_names, self.labels = get_clf_data(self.datadir, split, habitat=habitat)
 
         if n_samples:
-           self.img_names = self.img_names[:n_samples] 
-           self.labels = self.labels[:n_samples] 
+           self.img_names = self.img_names[:n_samples]
+           self.labels = self.labels[:n_samples]
 
         self.path = self.datadir #+ "/images/"
 
@@ -29,7 +29,7 @@ class FishClf:
     def __getitem__(self, index):
         name = self.img_names[index]
         image_pil = Image.open(self.path + name + ".jpg")
-       
+
         image = self.transform(image_pil)
 
 

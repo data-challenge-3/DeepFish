@@ -9,7 +9,6 @@ import torch.nn.functional as F
 import torch
 import torch.nn.functional as F
 import numpy as np
-from skimage.morphology import watershed
 from skimage.segmentation import find_boundaries
 from scipy import ndimage
 
@@ -56,14 +55,14 @@ class FCN8(nn.Module):
         x = self.resnet50_32s.maxpool(x)
 
         x = self.resnet50_32s.layer1(x)
-        
+
         x_8s = self.resnet50_32s.layer2(x)
         x_16s = self.resnet50_32s.layer3(x_8s)
         x_32s = self.resnet50_32s.layer4(x_16s)
 
         return x_8s, x_16s, x_32s
 
-    
+
 
     def forward(self, x):
         self.resnet50_32s.eval()

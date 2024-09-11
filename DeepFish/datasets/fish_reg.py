@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from src import datasets
-import os 
+from DeepFish import datasets
+import os
 from PIL import Image
 from torchvision import transforms
 
@@ -17,8 +17,8 @@ class FishReg:
 
         self.img_names, self.labels, self.counts = get_reg_data(self.datadir, split, habitat=habitat)
         if n_samples:
-           self.img_names = self.img_names[:n_samples] 
-           self.labels = self.labels[:n_samples] 
+           self.img_names = self.img_names[:n_samples]
+           self.labels = self.labels[:n_samples]
            self.counts = self.counts[:n_samples]
 
         self.path = self.datadir #+ "/images/"
@@ -30,14 +30,14 @@ class FishReg:
     def __getitem__(self, index):
         name = self.img_names[index]
         image_pil = Image.open(self.path + "/images/"+ name + ".jpg")
-       
+
         image = self.transform(image_pil)
 
 
         batch = {"images": image,
                  "labels": float(self.labels[index] > 0),
                  "image_original":transforms.ToTensor()(image_pil),
-                 "counts": float(self.counts[index]), 
+                 "counts": float(self.counts[index]),
                  "meta": {"index": index,
                           "image_id": index,
                           "split": self.split}}

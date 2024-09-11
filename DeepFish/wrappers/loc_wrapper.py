@@ -5,11 +5,11 @@ from torchvision import transforms
 import os
 import numpy as np
 import time
-from lcfcn import lcfcn_loss
-from src import utils as ut
+from ..models.lcfcn import lc_loss
+from DeepFish import utils as ut
 from sklearn.metrics import confusion_matrix
 import skimage
-from src import wrappers
+from DeepFish import wrappers
 from skimage import morphology as morph
 from skimage.segmentation import watershed
 from skimage.segmentation import find_boundaries
@@ -36,7 +36,7 @@ class LocWrapper(torch.nn.Module):
         return wrappers.vis_on_loader(self, vis_loader, savedir=savedir)
 
     def train_on_batch(self, batch, **extras):
-        
+
         self.train()
         images = batch["images"].cuda()
         points = batch["points"].long().cuda()
@@ -63,9 +63,9 @@ class LocWrapper(torch.nn.Module):
 
         return {'val_samples': images.shape[0], 'val_loc': abs(float((np.unique(blobs) != 0).sum() -
                                                                  (points != 0).sum()))}
-        
-    
-        
+
+
+
     @torch.no_grad()
     def vis_on_batch(self, batch, savedir_image):
         self.eval()
@@ -80,10 +80,10 @@ class LocWrapper(torch.nn.Module):
         pred_blobs = blobs
         pred_probs = probs.squeeze()
 
-        # loc 
+        # loc
         pred_count = pred_counts.ravel()[0]
         pred_blobs = pred_blobs.squeeze()
-        
+
         img_org = hu.get_image(batch["images"],denorm="rgb")
 
         # true points
@@ -92,7 +92,7 @@ class LocWrapper(torch.nn.Module):
         text = "%s ground truth" % (batch["points"].sum().item())
         hi.text_on_image(text=text, image=img_peaks)
 
-        # pred points 
+        # pred points
         pred_points = lcfcn_loss.blobs2points(pred_blobs).squeeze()
         y_list, x_list = np.where(pred_points.squeeze())
         img_pred = hi.mask_on_image(img_org, pred_blobs)
@@ -100,14 +100,14 @@ class LocWrapper(torch.nn.Module):
         text = "%s predicted" % (len(y_list))
         hi.text_on_image(text=text, image=img_pred)
 
-        # heatmap 
+        # heatmap
         heatmap = hi.gray2cmap(pred_probs)
         heatmap = hu.f2l(heatmap)
         hi.text_on_image(text="lcfcn heatmap", image=heatmap)
-        
-        
+
+
         img_mask = np.hstack([img_peaks, img_pred, heatmap])
-        
+
         hu.save_image(savedir_image, img_mask)
 class GAME:
     def __init__(self, density=4):
@@ -166,7 +166,7 @@ def blobs2points(blobs):
 
 
     # assert points.sum() == (np.unique(blobs) != 0).sum()
-       
+
     return points
 
 def compute_game(pred_points, gt_points, L=1):
@@ -187,7 +187,7 @@ def compute_game(pred_points, gt_points, L=1):
 
             pred_count = pred_points[sr:er, sc:ec]
             gt_count = gt_points[sr:er, sc:ec]
-            
+
             se += float(abs(gt_count.sum() - pred_count.sum()))
     return se
 
