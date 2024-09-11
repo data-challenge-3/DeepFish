@@ -33,8 +33,8 @@ class ClfWrapper(torch.nn.Module):
     def train_on_batch(self, batch: dict, **extras):
         self.opt.zero_grad()
 
-        labels = batch["labels"].to(self.device)
-        logits = self.model.forward(batch["images"].to(self.device))
+        labels = batch["labels"].float().to(self.device)
+        logits = self.model.forward(batch["images"].float().to(self.device))
         loss_clf =  F.binary_cross_entropy_with_logits(logits.squeeze(),
                         labels.squeeze().float(), reduction="mean")
         loss_clf.backward()
