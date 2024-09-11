@@ -8,16 +8,16 @@ from torch import nn
 from torch.nn import functional as F
 import tqdm
 import pprint
-from src import utils as ut
+from DeepFish import utils as ut
 import torchvision
 from haven import haven_utils as hu
 from haven import haven_chk as hc
 
-from src import datasets, models
+from DeepFish import datasets, models
 from torch.utils.data import DataLoader
 import exp_configs
 from torch.utils.data.sampler import RandomSampler
-from src import wrappers
+from DeepFish import wrappers
 from haven import haven_wizard as hw
 
 
@@ -37,27 +37,27 @@ def trainval(exp_dict, savedir, args):
     if args.use_cuda:
         device = 'cuda'
         torch.cuda.manual_seed_all(seed)
-        assert torch.cuda.is_available(), 'cuda is not, available please run with "-c 0"'
+        assert torch.cuda.is_available(), 'cuda is not, available please run with "-uc 0"'
     else:
         device = 'cpu'
 
     print('Running on device: %s' % device)
-    
+
     # Dataset
     # Load val set and train set
     val_set = datasets.get_dataset(dataset_name=exp_dict["dataset"], split="val",
                                    transform=exp_dict.get("transform"),
                                    datadir=args.datadir)
     train_set = datasets.get_dataset(dataset_name=exp_dict["dataset"],
-                                     split="train", 
+                                     split="train",
                                      transform=exp_dict.get("transform"),
                                      datadir=args.datadir)
-    
+
     # Load train loader, val loader, and vis loader
-    train_loader = DataLoader(train_set, 
+    train_loader = DataLoader(train_set,
                             sampler=RandomSampler(train_set,
-                            replacement=True, num_samples=max(min(500, 
-                                                            len(train_set)), 
+                            replacement=True, num_samples=max(min(500,
+                                                            len(train_set)),
                                                             len(val_set))),
                             batch_size=exp_dict["batch_size"])
 
@@ -68,7 +68,7 @@ def trainval(exp_dict, savedir, args):
 
     # Create model, opt, wrapper
     model_original = models.get_model(exp_dict["model"], exp_dict=exp_dict).cuda()
-    opt = torch.optim.Adam(model_original.parameters(), 
+    opt = torch.optim.Adam(model_original.parameters(),
                         lr=1e-5, weight_decay=0.0005)
 
     model = wrappers.get_wrapper(exp_dict["wrapper"], model=model_original, opt=opt).cuda()
@@ -100,7 +100,7 @@ def trainval(exp_dict, savedir, args):
         model.vis_on_loader(vis_loader, savedir=os.path.join(savedir, "images"))
         # validate
         score_dict.update(model.val_on_loader(val_loader))
-        
+
         # train
         score_dict.update(model.train_on_loader(train_loader))
 
