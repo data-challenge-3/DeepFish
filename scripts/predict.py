@@ -4,7 +4,7 @@ path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, path)
 from haven import haven_utils as hu
 import numpy as np
-from src import datasets, models, wrappers
+from DeepFish import datasets, models, wrappers
 import argparse
 from tqdm.auto import tqdm
 

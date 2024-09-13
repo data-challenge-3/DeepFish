@@ -19,15 +19,25 @@ Videos for DeepFish were collected for 20 habitats from remote coastal marine en
 ## Install requirements
 `pip install -r requirements.txt` 
 
-`pip install git+https://github.com/ElementAI/LCFCN`
+`pip install git+https://github.com/AHaasbroek/LCFCN`
 
-## Download
+In COMMAND PROMPT:
+- Change directory to the project's location. ```cd ${PATH_TO_PROJECT_FILE}```
+- Run the following line: 
+```
+pip install haven-ai==0.4.0
+```
+- For CUDA, run:
+```
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+```
 
-*  Download the DeepFish dataset from [here](http://data.qld.edu.au/public/Q5842/2020-AlzayatSaleh-00e364223a600e83bd9c3f5bcd91045-DeepFish/)
 
 ## 1. Train and test on single image
 
 ### Localization
+
+Run the following line in the COMMAND PROMPT with the directory as the project's location.
 ```
 python scripts/train_single_image.py -e loc -d ${PATH_TO_DATASET}
 ```

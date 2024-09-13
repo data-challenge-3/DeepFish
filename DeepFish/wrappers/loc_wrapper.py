@@ -5,7 +5,7 @@ from torchvision import transforms
 import os
 import numpy as np
 import time
-from ..models.lcfcn import lc_loss
+from lcfcn import lcfcn_loss
 from DeepFish import utils as ut
 from sklearn.metrics import confusion_matrix
 import skimage
